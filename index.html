@@ -300,11 +300,13 @@ a{color:inherit;text-decoration:none}
 /* Checkbox redondo con anillo de color de prioridad */
 .check{
   width:20px;height:20px;flex:none;margin-top:1px;border-radius:50%;
-  border:1.7px solid var(--pc,#9c9fa5);position:relative;transition:.12s;
-  display:grid;place-items:center;color:transparent;background:transparent;
+  border:2.4px solid var(--pc,#9c9fa5);position:relative;transition:.12s;
+  display:grid;place-items:center;color:transparent;
+  /* Relleno interior del mismo color de prioridad, translúcido (estilo Todoist) */
+  background:color-mix(in srgb,var(--pc,#9c9fa5) 22%,transparent);
 }
 .check::before{content:"";position:absolute;inset:-6px;border-radius:50%}
-.check:hover{background:color-mix(in srgb,var(--pc,#9c9fa5) 14%,transparent)}
+.check:hover{background:color-mix(in srgb,var(--pc,#9c9fa5) 34%,transparent)}
 .check .ic{width:12px;height:12px;stroke-width:2.4;color:var(--on-primary)}
 .task.completed .check{background:var(--pc,#9c9fa5);color:var(--on-primary)}
 
@@ -348,7 +350,9 @@ a{color:inherit;text-decoration:none}
 .col-dot{width:9px;height:9px;border-radius:50%;flex:none}
 .col-title{font-size:13.5px;font-weight:600;letter-spacing:-.1px}
 .col-title.overdue{color:var(--p1)}
+.col-date{font-size:11.5px;font-weight:500;color:var(--ink-tertiary);margin-left:1px}
 .col-count{font-size:12px;color:var(--ink-tertiary);font-weight:500;margin-left:auto}
+.col-empty{font-size:13px;color:var(--ink-subtle);padding:10px 4px 4px}
 .col-body{display:flex;flex-direction:column;gap:10px;padding:4px;border-radius:var(--r-lg);min-height:72px;transition:background .12s,box-shadow .12s}
 .column.drag-over .col-body{background:var(--drop-hi);box-shadow:inset 0 0 0 1.5px var(--ink-tertiary)}
 
@@ -367,6 +371,10 @@ a{color:inherit;text-decoration:none}
 .card-menu:hover{background:var(--surface-2);color:var(--ink)}
 .card-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px;margin-top:9px;padding-left:26px}
 .card-meta:empty{display:none}
+/* Descripción de la tarea en la vista Panel */
+.card-desc{font-size:12px;line-height:1.45;color:var(--ink-muted);margin-top:6px;padding-left:26px;
+  overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card.completed .card-desc{color:var(--ink-tertiary)}
 
 /* ============================================================================
    6. VISTA CALENDARIO
@@ -405,9 +413,34 @@ a{color:inherit;text-decoration:none}
 .cal-toggle button:hover{color:var(--ink)}
 .cal-toggle button.active{background:var(--surface-1);color:var(--ink);box-shadow:0 1px 2px var(--tab-shadow)}
 
-/* Vista Semana: reutiliza la grilla pero con celdas altas de una sola semana */
-.cal-days.week .cal-cell{min-height:440px}
-.cal-days.week .cal-tasks{overflow-y:auto}
+/* Vista Semana · rejilla horaria (00–23) con eje de horas a la izquierda */
+.cal-week{background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r-xl);overflow:hidden}
+.wk-head,.wk-allday,.wk-body{display:grid;grid-template-columns:58px repeat(7,1fr)}
+.wk-head{border-bottom:1px solid var(--hairline)}
+.wk-corner{border-right:1px solid var(--hairline-soft)}
+.wk-dh{padding:8px 6px;font-size:11.5px;font-weight:600;color:var(--ink-subtle);letter-spacing:.02em;text-transform:capitalize;display:flex;align-items:center;justify-content:center;gap:5px;border-right:1px solid var(--hairline-soft)}
+.wk-dh:last-child{border-right:none}
+.wk-dnum{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-weight:500;color:var(--ink)}
+.wk-dh.today .wk-dnum{background:var(--ink);color:var(--on-primary)}
+.wk-allday{border-bottom:1px solid var(--hairline);min-height:34px}
+.wk-ad-label{font-size:10px;line-height:1.1;color:var(--ink-tertiary);border-right:1px solid var(--hairline-soft);display:flex;align-items:center;justify-content:flex-end;text-align:right;padding:0 7px}
+.wk-ad-cell{border-right:1px solid var(--hairline-soft);padding:4px;display:flex;flex-direction:column;gap:3px;min-width:0;cursor:pointer}
+.wk-ad-cell:last-child{border-right:none}
+.wk-body{max-height:544px;overflow-y:auto;position:relative}
+.wk-hours{border-right:1px solid var(--hairline-soft)}
+.wk-hour{height:44px;position:relative}
+.wk-hour span{position:absolute;top:2px;right:7px;font-size:10.5px;color:var(--ink-tertiary)}
+.wk-col{position:relative;border-right:1px solid var(--hairline-soft);cursor:pointer;
+  background-image:repeating-linear-gradient(to bottom,var(--hairline-soft) 0,var(--hairline-soft) 1px,transparent 1px,transparent 44px)}
+.wk-col:last-child{border-right:none}
+.wk-col.today{background-color:color-mix(in srgb,var(--ink) 3%,transparent)}
+.wk-ev{position:absolute;left:3px;right:3px;min-height:22px;border-radius:var(--r-sm);padding:2px 7px;
+  background:color-mix(in srgb,var(--pc,#9c9fa5) 16%,var(--surface-1));border-left:3px solid var(--pc,#9c9fa5);
+  overflow:hidden;cursor:pointer;text-align:left;z-index:1}
+.wk-ev:hover{background:color-mix(in srgb,var(--pc,#9c9fa5) 26%,var(--surface-1))}
+.wk-et{display:block;font-size:9.5px;color:var(--ink-muted);line-height:1.1}
+.wk-tt{display:block;font-size:11px;line-height:1.2;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wk-ev.completed .wk-tt{text-decoration:line-through;color:var(--ink-tertiary)}
 
 /* Vista Día: agenda de un solo día en tarjeta blanca */
 .cal-dayview{background:var(--surface-1);border:1px solid var(--hairline);border-radius:var(--r-xl);padding:2px 16px 10px;max-width:820px;margin:0 auto}
@@ -1229,7 +1262,10 @@ function renderView(){
   if(state.view==='list') root.innerHTML=renderList();
   else if(state.view==='board') root.innerHTML=renderBoard();
   else root.innerHTML=renderCalendar();
-  // Reset del scroll horizontal del board a inicio
+  // La rejilla de la vista Semana arranca desplazada a la mañana (~7:00)
+  if(state.view==='calendar' && state.calView==='week'){
+    const wb=$('.wk-body'); if(wb) wb.scrollTop=7*44-10;
+  }
 }
 
 // —— Vista LISTA ——
@@ -1300,6 +1336,19 @@ function taskRow(t){
 
 // —— Vista PANEL · distribución por DÍAS ——
 function renderBoard(){
+  // Sección "Completadas": el panel se dedica a las tareas terminadas
+  // (una sola columna con las tarjetas ya marcadas como hechas).
+  if(state.nav==='completed'){
+    const done=sortTasks(applyFilters(state.tasks.filter(t=>t.completed)));
+    let h='<div class="board"><div class="column" data-col="completed">'+
+      '<div class="col-head"><span class="col-dot" style="background:var(--p3)"></span>'+
+      '<span class="col-title">Completadas</span><span class="col-count">'+done.length+'</span></div>'+
+      '<div class="col-body">';
+    if(!done.length) h+='<div class="col-empty">Aún no hay tareas completadas.</div>';
+    done.forEach(t=> h+=boardCard(t));
+    return h+'</div></div></div>';
+  }
+
   // Base: SOLO tareas pendientes (2 estados). El panel las reparte por día.
   // Las navegaciones por fecha (Hoy/Próximas) no acotan aquí, para que el
   // panel siempre muestre la distribución completa; sí se respeta el ámbito
@@ -1321,9 +1370,15 @@ function renderBoard(){
     // "Vencidas" y "Próximas" solo aparecen si tienen tareas. Hoy/Mañana/Sin
     // fecha permanecen siempre como destinos estables para arrastrar tarjetas.
     if(items.length===0 && (col.id==='overdue' || col.id==='upcoming')) return;
+    // Fecha junto al título en las columnas Hoy y Mañana
+    let dl='';
+    if(col.id==='today'){ const d=today(); dl=d.getDate()+' '+MON_SHORT[d.getMonth()]; }
+    else if(col.id==='tomorrow'){ const d=addDays(today(),1); dl=d.getDate()+' '+MON_SHORT[d.getMonth()]; }
     html+='<div class="column" data-col="'+col.id+'">';
     html+='<div class="col-head"><span class="col-dot" style="background:'+col.color+'"></span>'+
-          '<span class="col-title'+(col.overdue?' overdue':'')+'">'+col.name+'</span><span class="col-count">'+items.length+'</span></div>';
+          '<span class="col-title'+(col.overdue?' overdue':'')+'">'+col.name+'</span>'+
+          (dl?'<span class="col-date">'+dl+'</span>':'')+
+          '<span class="col-count">'+items.length+'</span></div>';
     html+='<div class="col-body" data-col="'+col.id+'">';
     items.forEach(t=> html+=boardCard(t));
     // "Añadir" prefija la fecha de la columna (Vencidas no admite destino)
@@ -1356,6 +1411,7 @@ function boardCard(t){
       '<div class="card-title" data-action="edit" data-id="'+t.id+'">'+esc(t.title)+'</div>'+
       '<button class="card-menu" data-action="card-menu" data-id="'+t.id+'" aria-label="Mover">'+icon('more','ic--sm')+'</button>'+
     '</div>'+
+    (t.description?'<div class="card-desc">'+esc(t.description)+'</div>':'')+
     (meta?'<div class="card-meta">'+meta+'</div>':'')+
   '</div>';
 }
@@ -1367,6 +1423,8 @@ function calTaskChip(t){
     '<span class="cdot"></span><span>'+(t.time?t.time+' ':'')+esc(t.title)+'</span></button>';
 }
 function sortByTime(items){ return items.slice().sort((a,b)=>(a.time||'99').localeCompare(b.time||'99')); }
+// "HH:MM" → minutos desde medianoche (null si no hay hora)
+function timeToMin(s){ const m=/^(\d{1,2}):(\d{2})/.exec(s||''); return m ? (+m[1])*60+(+m[2]) : null; }
 
 function renderCalendar(){
   const v=state.calView, ref=fromISO(state.calRef);
@@ -1424,21 +1482,53 @@ function calMonth(ref, byDate){
   return html+'</div></div>';
 }
 
-// Vista semanal (7 columnas altas)
+// Vista semanal · rejilla horaria con eje de horas a la izquierda; las tareas
+// con hora se ubican en su franja (44px por hora) y las que no tienen hora van
+// a la fila superior "todo el día".
 function calWeek(ref, byDate){
   const ws=startOfWeek(ref);
-  let html='<div class="cal-grid"><div class="cal-weekdays">';
-  for(let i=0;i<7;i++){ const d=addDays(ws,i); html+='<div class="cal-weekday">'+WD_MINI[i]+' '+d.getDate()+'</div>'; }
-  html+='</div><div class="cal-days week">';
-  for(let i=0;i<7;i++){
-    const day=addDays(ws,i), iso=toISO(day), tod=diffDays(day,today())===0;
-    const items=sortByTime(byDate[iso]||[]);
-    html+='<div class="cal-cell'+(tod?' today':'')+'" data-action="cal-day" data-date="'+iso+'">';
-    html+='<div class="cal-daynum" data-action="cal-goto" data-date="'+iso+'" title="Ver día">'+day.getDate()+'</div><div class="cal-tasks">';
-    items.forEach(t=> html+=calTaskChip(t));
-    html+='</div></div>';
-  }
-  return html+'</div></div>';
+  const days=[]; for(let i=0;i<7;i++) days.push(addDays(ws,i));
+
+  // Cabecera de días (lun–dom)
+  let head='<div class="wk-head"><div class="wk-corner"></div>';
+  days.forEach((d,i)=>{
+    const tod=diffDays(d,today())===0;
+    head+='<div class="wk-dh'+(tod?' today':'')+'">'+WD_MINI[i]+'<span class="wk-dnum">'+d.getDate()+'</span></div>';
+  });
+  head+='</div>';
+
+  // Franja superior "todo el día" (tareas sin hora)
+  let allday='<div class="wk-allday"><div class="wk-ad-label">todo el día</div>';
+  days.forEach(d=>{
+    const iso=toISO(d);
+    const items=sortByTime((byDate[iso]||[]).filter(t=>!t.time));
+    allday+='<div class="wk-ad-cell" data-action="cal-day" data-date="'+iso+'">';
+    items.forEach(t=> allday+=calTaskChip(t));
+    allday+='</div>';
+  });
+  allday+='</div>';
+
+  // Eje de horas 00:00–23:00 (intervalos de una hora)
+  let hours='<div class="wk-hours">';
+  for(let h=0;h<24;h++) hours+='<div class="wk-hour"><span>'+String(h).padStart(2,'0')+':00</span></div>';
+  hours+='</div>';
+
+  // Columnas por día con los eventos posicionados según su hora
+  let cols='';
+  days.forEach(d=>{
+    const iso=toISO(d), tod=diffDays(d,today())===0;
+    const timed=sortByTime((byDate[iso]||[]).filter(t=>t.time));
+    cols+='<div class="wk-col'+(tod?' today':'')+'" data-action="cal-day" data-date="'+iso+'">';
+    timed.forEach(t=>{
+      const p=PRIOS[t.priority];
+      const top=Math.round((timeToMin(t.time)||0)/60*44);
+      cols+='<button class="wk-ev'+(t.completed?' completed':'')+'" data-action="edit" data-id="'+t.id+'" style="top:'+top+'px;--pc:'+p.color+'">'+
+            '<span class="wk-et">'+t.time+'</span><span class="wk-tt">'+esc(t.title)+'</span></button>';
+    });
+    cols+='</div>';
+  });
+
+  return '<div class="cal-week">'+head+allday+'<div class="wk-body">'+hours+cols+'</div></div>';
 }
 
 // Vista de un solo día (agenda)
